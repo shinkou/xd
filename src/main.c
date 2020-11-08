@@ -58,10 +58,10 @@ static void print_help()
 		"  NUM   an integer number\n"
 		"  FILE  path of the file to dump\n"
 		"  -     read from stdin\n\n"
-		, BYTES_PER_LINE
-		, LINES_PER_READ
-		, OFFSET
 		, LIMIT
+		, OFFSET
+		, LINES_PER_READ
+		, BYTES_PER_LINE
 	);
 }
 
