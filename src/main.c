@@ -38,22 +38,22 @@ static void print_help()
 	printf
 	(
 		"Usage:\n"
-		"  xd [ OPTIONS ] FILE [ FILE [ FILE [ ... ] ] ]\n"
-		"or\n"
-		"  xd -\n\n"
+		"    xd [ OPTIONS ] FILE [ FILE [ FILE [ ... ] ] ]\n"
+		"  or\n"
+		"    xd -\n\n"
 		"Description:\n"
 		"  Hex Dump\n\n"
 		"OPTIONS:\n"
 		"  -h\n"
 		"      print out this help menu and quit\n"
-		"  -b<NUM>, --bytes-per-line=<NUM>\n"
-		"      number of bytes to display per line (default: %d)\n"
-		"  -l<NUM>, --lines-per-read=<NUM>\n"
-		"      number of lines per read (default: %d)\n"
-		"  -O<NUM>, --offset=<NUM>\n"
+		"  -l<NUM>, --limit=<NUM>\n"
+		"      number of bytes to dump (default: %d, means no limit)\n"
+		"  -o<NUM>, --offset=<NUM>\n"
 		"      number of bytes to skip from the beginning (default: %d)\n"
-		"  -L<NUM>, --limit=<NUM>\n"
-		"      number of bytes to dump (default: %d, means no limit)\n\n"
+		"  -r<NUM>, --read-size=<NUM>\n"
+		"      read size, in number of lines (default: %d)\n"
+		"  -w<NUM>, --width=<NUM>\n"
+		"      width, in number of bytes per line (default: %d)\n\n"
 		"where\n"
 		"  NUM   an integer number\n"
 		"  FILE  path of the file to dump\n"
@@ -78,14 +78,14 @@ static int getxdopts(int const argc, char * const *argv, xdopts * const xo)
 	static struct option long_opts[] =
 	{
 		{"help", 0, 0, 'h'}
-		, {"bytes-per-line", 1, 0, 'b'}
-		, {"lines-per-read", 1, 0, 'l'}
-		, {"offset", 1, 0, 'O'}
-		, {"limit", 1, 0, 'L'}
+		, {"limit", 1, 0, 'l'}
+		, {"offset", 1, 0, 'o'}
+		, {"read-size", 1, 0, 'r'}
+		, {"width", 1, 0, 'w'}
 		, {0, 0, 0, 0}
 	};
 
-	while(-1 != (c = getopt_long(argc, argv, "O:L:b:l:h", long_opts, 0)))
+	while(-1 != (c = getopt_long(argc, argv, "hl:o:r:w:", long_opts, 0)))
 	{
 		switch(c)
 		{
@@ -93,40 +93,40 @@ static int getxdopts(int const argc, char * const *argv, xdopts * const xo)
 			print_help();
 			return 0;
 			break;
-		case 'L':
+		case 'l':
 			if (!isnumber(optarg) || readint("limit", optarg, &xo->limit))
 			{
 				printf("Invalid limit: %s\n", optarg);
 				return 1;
 			}
 			break;
-		case 'O':
+		case 'o':
 			if (!isoffset(optarg) || readint("offset", optarg, &xo->offset))
 			{
 				printf("Invalid offset: %s\n", optarg);
 				return 1;
 			}
 			break;
-		case 'b':
+		case 'r':
 			if
 			(
 				!isnumber(optarg)
-				|| readint("bytes_per_line", optarg, &xo->bytes_per_line)
+				|| readint("read_size", optarg, &xo->lines_per_read)
 			)
 			{
-				printf("Invalid bytes-per-line: %s\n", optarg);
+				printf("Invalid read-size: %s\n", optarg);
 				return 1;
 			}
 			xo->bytes_per_read = xo->bytes_per_line * xo->lines_per_read;
 			break;
-		case 'l':
+		case 'w':
 			if
 			(
 				!isnumber(optarg)
-				|| readint("lines_per_read", optarg, &xo->lines_per_read)
+				|| readint("width", optarg, &xo->bytes_per_line)
 			)
 			{
-				printf("Invalid lines-per-read: %s\n", optarg);
+				printf("Invalid width: %s\n", optarg);
 				return 1;
 			}
 			xo->bytes_per_read = xo->bytes_per_line * xo->lines_per_read;
