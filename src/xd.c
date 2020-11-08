@@ -36,34 +36,18 @@ static int dump_file(const xdopts * const ptr)
 	short addrwidth = 2;
 	char addrfmt[16] = {0,};
 
-	if (ptr->fd)
-	{
-		wk = fsize = lseek(ptr->fd, 0, SEEK_END);
-		lseek
-		(
-			ptr->fd
-			, (0 > ptr->offset) ? fsize + ptr->offset : ptr->offset
-			, SEEK_SET
-		);
+	if (0 >= ptr->fd) return -1;
 
-		while((wk >>= 8) & 0xff) addrwidth += 2;
+	wk = fsize = lseek(ptr->fd, 0, SEEK_END);
 
-		if (0 < ptr->limit)
-		{
-			if (0 <= ptr->offset && ptr->offset + ptr->limit < fsize)
-				fsize = ptr->offset + ptr->limit;
-			else if
-			(
-				0 > ptr->offset
-				&& fsize + ptr->offset + ptr->limit < fsize
-			)
-				fsize = fsize + ptr->offset + ptr->limit;
-		}
-	}
-	else
-	{
-		addrwidth = 8;
-	}
+	idx = (0 > ptr->offset)
+		? (0 > fsize + ptr->offset ? 0 : fsize + ptr->offset)
+		: ptr->offset;
+
+	while((wk >>= 8) & 0xff) addrwidth += 2;
+
+	if (0 < ptr->limit && (idx + ptr->limit < fsize))
+		fsize = idx + ptr->limit;
 
 	sprintf(addrfmt, "%%0%dx:", addrwidth);
 
@@ -71,13 +55,14 @@ static int dump_file(const xdopts * const ptr)
 
 	for
 	(
-		idx = lseek(ptr->fd, 0, SEEK_CUR);
+		lseek(ptr->fd, idx, SEEK_SET);
 		(ret = read(ptr->fd, buf, ptr->bytes_per_read)) > 0 && fsize > idx;
 	)
 	{
 		for(wk = 0; wk < ret && fsize > idx; wk += cnt)
 		{
-			cnt = (ptr->bytes_per_line <= (ret - wk)) ? ptr->bytes_per_line : ret - wk;
+			cnt = (ptr->bytes_per_line <= (ret - wk))
+				? ptr->bytes_per_line : ret - wk;
 
 			printf(addrfmt, idx);
 
