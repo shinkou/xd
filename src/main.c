@@ -53,7 +53,7 @@ static void print_help()
 		"  -r<NUM>, --read-size=<NUM>\n"
 		"      read size, in number of lines (default: %d)\n"
 		"  -w<NUM>, --width=<NUM>\n"
-		"      width, in number of bytes per line (default: %d)\n\n"
+		"      width, in number of bytes (default: %d)\n\n"
 		"where\n"
 		"  NUM   an integer number\n"
 		"  FILE  path of the file to dump\n"
