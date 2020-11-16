@@ -1,6 +1,6 @@
 # xd
 
-Hex Dumper
+Hex Dump
 
 ## How to use
 
