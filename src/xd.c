@@ -49,7 +49,7 @@ static int dump_file(const xdopts * const ptr)
 	if (0 < ptr->limit && (idx + ptr->limit < fsize))
 		fsize = idx + ptr->limit;
 
-	sprintf(addrfmt, "%%0%dx:", addrwidth);
+	sprintf(addrfmt, "%%0%dllx:", addrwidth);
 
 	buf = calloc(1, ptr->bytes_per_read);
 
